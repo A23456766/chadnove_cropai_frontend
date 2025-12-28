@@ -1,0 +1,49 @@
+/* ChadNova Corporate Styling */
+:root {
+    --chad-green-dark: #064e3b;
+    --chad-green-light: #10b981;
+    --chad-bg: #f8fafc;
+}
+
+body {
+    background-color: var(--chad-bg);
+    color: #1e293b;
+    overflow-x: hidden;
+}
+
+.navbar {
+    background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+    border-bottom: 3px solid var(--chad-green-light);
+}
+
+.card {
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.result-card {
+    background: #ffffff;
+    border-left: 10px solid var(--chad-green-light) !important;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--chad-green-light) 0%, var(--chad-green-dark) 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+/* Report Printing Adjustments */
+@media print {
+    .no-print, nav, footer { display: none !important; }
+    .container { width: 100%; max-width: 100%; }
+    .card { border: none !important; box-shadow: none !important; }
+}
