@@ -55,7 +55,7 @@ async function runPrediction(data) {
         localStorage.setItem("chadnova_query", JSON.stringify(data));
         localStorage.setItem("chadnova_result", JSON.stringify(result));
 
-        window.location.href = "/dashboard.html";
+        window.location.href = "dashboard.html";
 
     } catch (err) {
         alert("Unable to reach AI service");
