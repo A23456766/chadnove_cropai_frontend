@@ -148,7 +148,7 @@
 
     <script>
         // Load metadata (countries & crops) from backend API
-        fetch(`{API_BASE_URL}/get_metadata`)
+        fetch(`${API_BASE_URL}/get_metadata`)
             .then(res => res.json())
             .then(data => {
                 const countrySelect = document.getElementById("countrySelect");
