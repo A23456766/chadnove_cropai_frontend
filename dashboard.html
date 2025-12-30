@@ -2,168 +2,158 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ChadNova AI | Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChadNova AI | Analysis Results</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="main.js"></script>
-    <style>
-        :root { --chad-green: #198754; --chad-dark: #1e293b; }
-        .navbar { background-color: var(--chad-dark) !important; }
-        .btn-success { background-color: var(--chad-green); border: none; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    </style>
+    <script src="main.js" defer></script>
 </head>
 <body class="bg-light">
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 sticky-top no-print">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="./index.html">
+            <a class="navbar-brand fw-bold" href="index.html">
                 <i class="fa-solid fa-leaf text-success me-2"></i>CHADNOVA AI
             </a>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="./index.html">Core Concepts</a>
-                <a class="nav-link btn btn-outline-success text-white px-3 ms-lg-3" href="./predict.html">Launch Predictor</a>
-                <a class="nav-link ms-3" href="./dashboard.html">
-                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                <a class="nav-link btn btn-outline-success text-white px-4 shadow-sm" href="predict.html">
+                    <i class="fa-solid fa-plus me-2"></i>New Analysis
                 </a>
             </div>
         </div>
     </nav>
 
-    <div class="container-fluid mt-5 px-5">
-        <!-- REPORT SECTION -->
-        <div id="reportSection" class="card shadow-lg border-0 p-5 bg-white border-start border-primary border-5 d-none mb-5" data-aos="zoom-in">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="text-primary fw-bold">Simulation Analysis Report</h2>
-                    <p class="text-muted mb-0">Forecast Year: <span id="reportYearHeader">2025</span> | Comparison Baseline: 1990 - 2013</p>
-                </div>
-                <div class="no-print">
-                    <button onclick="window.print()" class="btn btn-outline-dark fw-bold me-2">
-                        <i class="fa-solid fa-file-pdf me-2"></i> DOWNLOAD PDF
-                    </button>
-                    <a href="./predict.html" class="btn btn-success fw-bold">
-                        <i class="fa-solid fa-plus me-2"></i> NEW PREDICTION
-                    </a>
-                </div>
+    <div class="container mt-5" style="max-width: 900px;">
+        
+        <div class="card shadow-lg border-0 mb-4 p-5 text-center result-card" data-aos="zoom-in">
+            <div class="mb-3">
+                <span class="badge rounded-pill bg-success bg-opacity-10 text-success px-3 py-2 border border-success">
+                    <i class="fa-solid fa-circle-check me-1"></i> AI DIAGNOSTIC COMPLETE
+                </span>
             </div>
+            <h5 class="text-muted text-uppercase fw-bold ls-2">Estimated Yield Output</h5>
+            
+            <h1 class="display-1 fw-bold text-success my-3">
+                <span id="bigPredictionValue">0</span> 
+                <span class="fs-4 text-secondary">hg/ha</span>
+                <i class="fa-solid fa-circle-question fs-6 text-muted ms-2" 
+                   style="cursor:help" 
+                   data-bs-toggle="tooltip" 
+                   data-bs-placement="top" 
+                   title="Hectograms per Hectare: The global standard for crop productivity. (10 hg/ha = 1 kg/ha)"></i>
+            </h1>
 
-            <div class="table-responsive rounded border mb-4">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Metric Parameter</th>
-                            <th>2013 Baseline</th>
-                            <th id="forecastTableHeader">Target Forecast</th>
-                            <th>Performance Delta (%)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Crop Yield (hg/ha)</strong></td>
-                            <td id="tableBaseline">-</td>
-                            <td id="tableForecast" class="fw-bold">-</td>
-                            <td id="tableDelta" class="fw-bold">-</td>
-                        </tr>
-                        <tr>
-                            <td>Production Stability</td>
-                            <td>Historical Average</td>
-                            <td>Simulated Projection</td>
-                            <td id="tableStability">-</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="alert p-3 border-0 rounded" id="summaryAlert">
-                <p id="summaryText" class="mb-0"></p>
+            <p class="lead text-muted">
+                Projected for <span id="bigCountryName" class="fw-bold text-dark text-decoration-underline">...</span> 
+                (<span id="bigCropName" class="fw-bold text-dark">...</span>)
+            </p>
+            
+            <div class="no-print mt-4">
+                <button onclick="revealComparison()" id="btnCompare" class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow hover-scale">
+                    <i class="fa-solid fa-scale-balanced me-2"></i>COMPARE WITH HISTORY
+                </button>
             </div>
         </div>
 
-        <div class="row">
-            <!-- LEFT PANEL -->
-            <div class="col-md-4 no-print" data-aos="fade-right">
-                <div class="card shadow border-0 p-4 mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="text-success mb-0">Simulation</h4>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="liveToggle" onchange="toggleManualMode()">
-                            <label class="small fw-bold">Live Data</label>
-                        </div>
+        <div id="sectionComparison" class="card shadow border-0 mb-4 d-none p-5 report-header" data-aos="fade-up">
+            <div class="row align-items-center text-center text-md-start">
+                <div class="col-md-7">
+                    <h3 class="fw-bold text-primary mb-3">Historical Context</h3>
+                    <p class="text-muted">
+                        Analysis of the <strong><span id="compareYear">2025</span></strong> forecast against the latest verified regional baseline.
+                    </p>
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle mt-2">
+                            <tbody>
+                                <tr class="border-bottom">
+                                    <td class="py-3 text-muted">
+                                        <div class="fw-bold text-dark">Historical Baseline</div>
+                                        <div class="small opacity-50">Average yield recorded over the last decade.</div>
+                                    </td>
+                                    <td class="py-3 fw-bold text-end" id="valBaseline">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-muted">
+                                        <div class="fw-bold text-dark">Performance Delta</div>
+                                        <div class="small opacity-50">Percentage change between history and AI forecast.</div>
+                                    </td>
+                                    <td class="py-3 fw-bold text-end fs-5" id="valDelta">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    
-                    <div id="liveFetchContainer" class="d-none mb-3">
-                        <button onclick="fetchWeatherData()" class="btn btn-outline-primary btn-sm w-100">
-                            <i class="fa-solid fa-cloud-bolt me-2"></i> FETCH LIVE WEATHER
-                        </button>
+                </div>
+                <div class="col-md-5 text-center border-start ps-md-5 no-print">
+                    <div class="p-3 bg-light rounded mb-4">
+                        <i class="fa-solid fa-circle-info text-primary mb-2"></i>
+                        <p class="small text-muted mb-0">A <strong>positive delta</strong> indicates an improvement in food security outcomes for the region.</p>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="small fw-bold">Country</label>
-                        <select id="countrySelect" class="form-select shadow-sm"></select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="small fw-bold">Crop</label>
-                        <select id="cropSelect" class="form-select shadow-sm"></select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="small fw-bold">Forecast Year</label>
-                        <select id="simYear" class="form-select shadow-sm">
-                            <option value="2024">2024</option>
-                            <option value="2025" selected>2025</option>
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                            <option value="2030">2030 (Long Term)</option>
-                        </select>
-                    </div>
-
-                    <div class="row g-2 mb-3">
-                        <div class="col-6"><label class="small fw-bold">Rain (mm)</label><input type="number" id="simRain" class="form-control" value="1000"></div>
-                        <div class="col-6"><label class="small fw-bold">Temp (°C)</label><input type="number" id="simTemp" class="form-control" value="25"></div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="small fw-bold">Pesticides (tonnes)</label>
-                        <input type="number" id="simPest" class="form-control" value="100">
-                    </div>
-                    <button onclick="runSimulation()" class="btn btn-success w-100 fw-bold py-3 shadow-sm">GENERATE FINAL FORECAST</button>
+                    <button onclick="revealForecast()" id="btnForecast" class="btn btn-success btn-lg w-100 py-3 fw-bold shadow">
+                        <i class="fa-solid fa-wand-magic-sparkles me-2"></i>VIEW TRAJECTORY
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <!-- RIGHT PANEL (Chart) -->
-            <div class="col-md-8">
-                <div class="card shadow border-0 p-5 bg-white h-100">
-                    <h3 class="fw-bold mb-4">Production Lifecycle Analysis</h3>
-                    <canvas id="yieldTrendChart" style="max-height: 450px;"></canvas>
-                    <div id="predictionLegend" class="mt-3 small text-center d-none">
-                        <span class="me-3"><i class="fa-solid fa-circle text-success"></i> Historical Data</span>
-                        <span><i class="fa-solid fa-circle text-primary"></i> AI <span id="legendYear">2025</span> Forecast Point</span>
-                    </div>
+        <div id="sectionGraph" class="card shadow border-0 p-4 d-none mb-5" data-aos="fade-up">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-0">Yield Trajectory Analysis</h4>
+                    <p class="small text-muted mb-0">Visualizing the transition from history to AI-calculated future.</p>
                 </div>
+                <div class="small fw-bold">
+                    <span class="me-3"><i class="fa-solid fa-circle text-success me-1"></i> Historical Records</span>
+                    <span><i class="fa-solid fa-circle text-primary me-1"></i> AI Prediction</span>
+                </div>
+            </div>
+            
+            <div style="height: 400px; position: relative;">
+                <canvas id="yieldTrendChart"></canvas>
+            </div>
+
+            <div class="mt-4 p-3 bg-light rounded border-start border-primary border-4">
+                <p class="small text-muted mb-0">
+                    <strong>How to read:</strong> The solid green line represents real-world data points from our 28,000-point dataset. The blue dashed line connects the last known data point to the AI's predicted outcome for 2025.
+                </p>
+            </div>
+
+            <div class="text-center mt-4 no-print border-top pt-4">
+                <button onclick="window.print()" class="btn btn-outline-dark me-2 rounded-3 px-4">
+                    <i class="fa-solid fa-file-pdf me-2"></i>Export Report
+                </button>
+                <a href="predict.html" class="btn btn-outline-secondary px-4 rounded-3">
+                    Restart Simulation
+                </a>
             </div>
         </div>
     </div>
 
+    <footer class="py-5 text-center text-muted small mt-5 bg-white border-top no-print">
+        <div class="container">
+            <p class="mb-1 fw-bold text-dark">ChadNova Technologies &copy; 2025</p>
+            <p>Empowering decision-makers through transparent AI diagnostics.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Load metadata (countries & crops) from backend API
-        fetch(`${API_BASE_URL}/get_metadata`)
-            .then(res => res.json())
-            .then(data => {
-                const countrySelect = document.getElementById("countrySelect");
-                const cropSelect = document.getElementById("cropSelect");
-                data.countries.forEach(c => {
-                    const opt = document.createElement("option");
-                    opt.value = c; opt.textContent = c;
-                    countrySelect.appendChild(opt);
-                });
-                data.crops.forEach(c => {
-                    const opt = document.createElement("option");
-                    opt.value = c; opt.textContent = c;
-                    cropSelect.appendChild(opt);
-                });
-            });
+        document.addEventListener("DOMContentLoaded", () => {
+            // Initialize AOS
+            AOS.init({ duration: 800, once: true });
+            
+            // Initialize Bootstrap Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        });
     </script>
 </body>
 </html>

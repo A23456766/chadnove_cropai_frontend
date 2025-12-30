@@ -3,98 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChadNova AI | Home</title>
+    <title>ChadNova AI | Core Concepts</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- AOS -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
     <style>
-        :root { --chad-green: #198754; --chad-dark: #1e293b; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .navbar { background-color: var(--chad-dark) !important; }
-        .btn-success { background-color: var(--chad-green); border: none; }
+        .nav-link.active { color: var(--chad-green-light) !important; font-weight: 700; border-bottom: 2px solid var(--chad-green-light); }
+        .feature-icon { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .card:hover .feature-icon { transform: translateY(-10px) scale(1.1); }
+        header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom: 5px solid var(--chad-green-light); }
+        .stat-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
-
-    <script src="main.js" defer></script>
 </head>
-<body class="bg-light">
+<body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3">
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3 sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="./index.html">
+            <a class="navbar-brand fw-bold" href="index.html">
                 <i class="fa-solid fa-leaf text-success me-2"></i>CHADNOVA AI
             </a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="./index.html">Core Concepts</a>
-                <a class="nav-link btn btn-outline-success text-white px-3 ms-lg-3" href="./predict.html">
-                    Launch Predictor
-                </a>
-                <a class="nav-link ms-3" href="./dashboard.html">
-                    <i class="fa-solid fa-chart-line"></i> Dashboard
-                </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto align-items-center">
+                    <a class="nav-link active" href="index.html">Core Concepts</a>
+                    <a class="nav-link ms-lg-3" href="dashboard.html"><i class="fa-solid fa-chart-line me-1"></i> Dashboard</a>
+                    <a class="nav-link btn btn-success text-white px-4 ms-lg-4 mt-2 mt-lg-0 shadow-sm" href="predict.html">Launch Predictor</a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- HERO SECTION -->
-    <header class="bg-success text-white py-5 shadow-sm text-center" data-aos="zoom-in">
-        <h1 class="display-4 fw-bold">Global Crop Intelligence</h1>
-        <p class="lead">Harnessing 28,000+ data points to secure the future of food.</p>
+    <header class="text-white py-5 shadow-sm text-center position-relative overflow-hidden" data-aos="fade-down">
+        <div class="container py-5">
+            <h1 class="display-3 fw-bold mb-3 text-uppercase">Global Crop Intelligence</h1>
+            <p class="lead opacity-75 mx-auto mb-4" style="max-width: 750px;">
+                Secure the future of food security in Chad by harnessing <strong>28,000+ FAO-verified data points</strong> and advanced Machine Learning.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="predict.html" class="btn btn-success btn-lg px-5 py-3 fw-bold rounded-pill">LAUNCH ANALYSIS</a>
+            </div>
+        </div>
     </header>
 
-    <div class="container my-5">
+    <div class="container my-5 py-4">
+        
+        <div class="row mb-5" data-aos="fade-up">
+            <div class="col-12">
+                <div class="card border-0 bg-dark text-white p-5 shadow-lg overflow-hidden">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h3 class="fw-bold mb-3"><i class="fa-solid fa-database text-success me-2"></i>Project Intelligence</h3>
+                            <p class="opacity-75 lead">
+                                Our AI isn't guessing; it's learning from a validated global dataset. We correlate historical yields with three critical pillars of agricultural success:
+                            </p>
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-4">
+                                    <div class="stat-card p-3 rounded text-center">
+                                        <i class="fa-solid fa-cloud-sun text-info mb-2 fa-2x"></i>
+                                        <div class="small fw-bold">CLIMATE DRIVERS</div>
+                                        <div class="extra-small opacity-50 mt-1" style="font-size: 0.7rem;">Rainfall & Temp</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stat-card p-3 rounded text-center">
+                                        <i class="fa-solid fa-microscope text-warning mb-2 fa-2x"></i>
+                                        <div class="small fw-bold">SOIL HEALTH</div>
+                                        <div class="extra-small opacity-50 mt-1" style="font-size: 0.7rem;">Yield Baselines</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stat-card p-3 rounded text-center">
+                                        <i class="fa-solid fa-person-digging text-success mb-2 fa-2x"></i>
+                                        <div class="small fw-bold">HUMAN INPUT</div>
+                                        <div class="extra-small opacity-50 mt-1" style="font-size: 0.7rem;">Pesticide Usage</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-center d-none d-lg-block">
+                            <i class="fa-solid fa-shield-check fa-6x text-success opacity-25"></i>
+                            <div class="mt-3 fw-bold text-uppercase ls-1">FAO Verified Data</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row g-4">
             <div class="col-md-4" data-aos="fade-up">
-                <div class="card h-100 border-0 shadow-sm p-4 text-center">
-                    <i class="fa-solid fa-cloud-showers-heavy fa-3x text-primary mb-3"></i>
-                    <h5 class="fw-bold">Rainfall Data</h5>
-                    <p class="text-muted small">
-                        Tracks annual rainfall (mm/year) to determine soil moisture availability for crops.
-                    </p>
+                <div class="card h-100 p-4 border-0 shadow-sm text-center">
+                    <i class="fa-solid fa-cloud-rain fa-3x text-primary mb-4 feature-icon"></i>
+                    <h5 class="fw-bold">Precipitation Logic</h5>
+                    <p class="text-muted small">We analyze mm/year to determine moisture availability. Without precise rainfall data, AI cannot calculate crop hydration stress.</p>
                 </div>
             </div>
             <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="card h-100 border-0 shadow-sm p-4 text-center">
-                    <i class="fa-solid fa-temperature-high fa-3x text-warning mb-3"></i>
-                    <h5 class="fw-bold">Climate Metrics</h5>
-                    <p class="text-muted small">Average temperature data used to model crop heat-stress thresholds.</p>
+                <div class="card h-100 p-4 border-0 shadow-sm text-center">
+                    <i class="fa-solid fa-temperature-arrow-up fa-3x text-warning mb-4 feature-icon"></i>
+                    <h5 class="fw-bold">Thermal Thresholds</h5>
+                    <p class="text-muted small">Crops have a 'burn point.' Our climate metrics predict when rising temperatures will trigger a drop in productivity.</p>
                 </div>
             </div>
             <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="card h-100 border-0 shadow-sm p-4 text-center">
-                    <i class="fa-solid fa-flask fa-3x text-danger mb-3"></i>
-                    <h5 class="fw-bold">Pesticide Logic</h5>
-                    <p class="text-muted small">Measures pesticide input helping AI understand farming intensity.</p>
+                <div class="card h-100 p-4 border-0 shadow-sm text-center">
+                    <i class="fa-solid fa-vial-circle-check fa-3x text-danger mb-4 feature-icon"></i>
+                    <h5 class="fw-bold">Intensity Metrics</h5>
+                    <p class="text-muted small">By analyzing pesticide tonnes, we help users find the balance between high-intensity farming and sustainable yields.</p>
                 </div>
             </div>
         </div>
-
-        <div class="mt-5 p-5 bg-white rounded shadow-sm" data-aos="fade-right">
-            <h3 class="fw-bold mb-3">How to Use the AI Predictor</h3>
-            <ol class="mt-3">
-                <li>Select the <strong>Country</strong> and the target <strong>Crop</strong>.</li>
-                <li>Input <strong>Environmental Variables</strong>.</li>
-                <li>Click <strong>Run Analysis</strong> to generate an <strong>AI Yield Report</strong>.</li>
-            </ol>
-            <a href="./predict.html" class="btn btn-success btn-lg mt-3 px-5 fw-bold shadow-sm">Start AI Prediction</a>
-        </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="py-4 text-center text-muted small mt-5">
-        &copy; 2025 ChadNova Technologies. All Rights Reserved.
+    <footer class="py-5 text-center text-muted small mt-5 border-top bg-white">
+        <div class="container">
+            <p class="mb-1 fw-bold text-dark">ChadNova Technologies &copy; 2025</p>
+            <p>Empowering Agricultural Decisions through AI-Driven Analytics</p>
+        </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>AOS.init({ duration: 800, once: true });</script>
 </body>

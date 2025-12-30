@@ -1,253 +1,218 @@
-const API_BASE_URL = "https://chadnove-cropai-backend.onrender.com/api";
+/**
+ * CHADNOVA AI - Core Logic Engine
+ * Optimized for Hybrid Weather Sync & Step-by-Step Dashboard Reveal
+ */
 
-///////////////////////////
-// METADATA
-///////////////////////////
+// 1. SMART IP DETECTION (Detects localhost or your local IP automatically)
+const currentIP = window.location.hostname; 
+const API_BASE_URL = `http://${currentIP}:5000/api`; 
 
-async function populateDropdowns(countryId, cropId) {
-    try {
-        const res = await fetch(`${API_BASE_URL}/get_metadata`);
-        if (!res.ok) throw new Error("Failed to fetch metadata");
+console.log("🚀 ChadNova Engine Initialized at:", API_BASE_URL);
 
-        const data = await res.json();
-        const countrySelect = document.getElementById(countryId);
-        const cropSelect = document.getElementById(cropId);
+// Global state for Chart stitching
+let globalHistory = { years: [], yields: [] };
+let globalPrediction = null;
 
-        if (!countrySelect || !cropSelect) return;
+document.addEventListener("DOMContentLoaded", async () => {
 
-        countrySelect.innerHTML = `<option value="" disabled selected>Select country</option>`;
-        cropSelect.innerHTML = `<option value="" disabled selected>Select crop</option>`;
+    // --- ELEMENTS ---
+    const countrySelect = document.getElementById("countrySelect");
+    const cropSelect = document.getElementById("cropSelect");
+    const weatherToggle = document.getElementById("weatherToggle");
+    const rainInput = document.getElementById("rainInput");
+    const tempInput = document.getElementById("tempInput");
+    const rainHint = document.getElementById("rainHint");
+    const tempHint = document.getElementById("tempHint");
+    const predictForm = document.getElementById("predictForm");
 
-        data.countries.forEach(c => {
-            const opt = document.createElement("option");
-            opt.value = c;
-            opt.textContent = c;
-            countrySelect.appendChild(opt);
+    // ==========================================
+    // 1. PREDICT PAGE LOGIC
+    // ==========================================
+    if (countrySelect && cropSelect) {
+        console.log("📍 Predictor UI Detected.");
+
+        // Fetch Metadata for Dropdowns
+        try {
+            const res = await fetch(`${API_BASE_URL}/get_metadata`);
+            const data = await res.json();
+            
+            // Clear "Syncing..." and populate
+            countrySelect.innerHTML = '<option value="" disabled selected>Select a country</option>';
+            cropSelect.innerHTML = '<option value="" disabled selected>Select a crop</option>';
+            
+            data.countries.forEach(c => countrySelect.add(new Option(c, c)));
+            data.crops.forEach(c => cropSelect.add(new Option(c, c)));
+        } catch (e) { 
+            console.error("❌ Metadata fetch failed. Is Backend running?");
+            countrySelect.innerHTML = '<option value="" disabled>Server Offline</option>';
+        }
+
+        // HYBRID TOGGLE LOGIC (Lock/Unlock Inputs)
+        if (weatherToggle) {
+            weatherToggle.addEventListener("change", () => {
+                const isAuto = weatherToggle.checked;
+                rainInput.readOnly = isAuto;
+                tempInput.readOnly = isAuto;
+                
+                if (isAuto) {
+                    rainInput.classList.add("bg-light");
+                    tempInput.classList.add("bg-light");
+                    rainHint.innerHTML = '<i class="fa-solid fa-lock me-1"></i> Locked to Live Data';
+                    tempHint.innerHTML = '<i class="fa-solid fa-lock me-1"></i> Locked to Live Data';
+                    if(countrySelect.value) fetchWeather(countrySelect.value);
+                } else {
+                    rainInput.classList.remove("bg-light");
+                    tempInput.classList.remove("bg-light");
+                    rainHint.innerHTML = '<i class="fa-solid fa-hand me-1"></i> Manual Override Active';
+                    tempHint.innerHTML = '<i class="fa-solid fa-hand me-1"></i> Manual Override Active';
+                }
+            });
+        }
+
+        // WEATHER FETCH FUNCTION
+        async function fetchWeather(country) {
+            if (!weatherToggle || !weatherToggle.checked) return;
+            
+            rainInput.placeholder = "Syncing...";
+            tempInput.placeholder = "Syncing...";
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/get_live_weather/${country}`);
+                const data = await res.json();
+                if (data.temp) {
+                    tempInput.value = data.temp;
+                    rainInput.value = data.rain;
+                }
+            } catch (err) { console.error("❌ Weather sync failed"); }
+        }
+
+        countrySelect.addEventListener("change", () => fetchWeather(countrySelect.value));
+
+        // FORM SUBMISSION
+        predictForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const loader = document.getElementById("loadingState");
+            if (loader) loader.classList.remove("d-none");
+
+            const formData = new FormData(predictForm);
+            const payload = Object.fromEntries(formData);
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/simulate`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                
+                localStorage.setItem("chad_payload", JSON.stringify(payload));
+                localStorage.setItem("chad_result", JSON.stringify(result));
+                
+                window.location.href = "dashboard.html";
+            } catch (err) {
+                alert("AI Simulation Failed. Check Backend connection.");
+                if (loader) loader.classList.add("d-none");
+            }
         });
-
-        data.crops.forEach(c => {
-            const opt = document.createElement("option");
-            opt.value = c;
-            opt.textContent = c;
-            cropSelect.appendChild(opt);
-        });
-
-    } catch (err) {
-        console.error("Metadata error:", err);
     }
+
+    // ==========================================
+    // 2. DASHBOARD PAGE LOGIC
+    // ==========================================
+    if (document.getElementById("bigPredictionValue")) {
+        console.log("📍 Dashboard UI Detected.");
+        loadDashboard();
+    }
+});
+
+// --- DASHBOARD HELPER FUNCTIONS ---
+
+async function loadDashboard() {
+    const payload = JSON.parse(localStorage.getItem("chad_payload"));
+    const result = JSON.parse(localStorage.getItem("chad_result"));
+
+    if (!payload || !result) return;
+
+    document.getElementById("bigPredictionValue").innerText = result.prediction.toLocaleString();
+    document.getElementById("bigCountryName").innerText = payload.country;
+    document.getElementById("bigCropName").innerText = payload.crop;
+    document.getElementById("compareYear").innerText = result.year;
+    
+    const valBaseline = document.getElementById("valBaseline");
+    valBaseline.innerText = result.baseline ? result.baseline.toLocaleString() : "N/A";
+
+    if (result.baseline) {
+        const diff = ((result.prediction - result.baseline) / result.baseline) * 100;
+        const deltaEl = document.getElementById("valDelta");
+        deltaEl.innerText = `${diff > 0 ? "+" : ""}${diff.toFixed(2)}%`;
+        deltaEl.className = diff > 0 ? "fw-bold text-success" : "fw-bold text-danger";
+    }
+
+    // Background fetch history for graph
+    try {
+        const res = await fetch(`${API_BASE_URL}/trend/${payload.country}/${payload.crop}`);
+        globalHistory = await res.json();
+        globalPrediction = result;
+    } catch (e) { console.error("❌ History fetch failed"); }
 }
 
-///////////////////////////
-// PREDICT PAGE
-///////////////////////////
-
-async function runPrediction(data) {
-    try {
-        const res = await fetch(`${API_BASE_URL}/simulate`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        if (!res.ok) throw new Error("Prediction failed");
-
-        const result = await res.json();
-        localStorage.setItem("chadnova_query", JSON.stringify(data));
-        localStorage.setItem("chadnova_result", JSON.stringify(result));
-
-        window.location.href = "./dashboard.html";
-
-    } catch (err) {
-        alert("Unable to reach AI service");
-        console.error(err);
-    }
+function revealComparison() {
+    document.getElementById("sectionComparison").classList.remove("d-none");
+    document.getElementById("btnCompare").classList.add("d-none");
 }
 
-///////////////////////////
-// DASHBOARD – CHART
-///////////////////////////
+function revealForecast() {
+    document.getElementById("sectionGraph").classList.remove("d-none");
+    document.getElementById("btnForecast").classList.add("d-none");
+    renderChart();
+}
 
-let trendChart = null;
-
-function initChart() {
+function renderChart() {
     const ctx = document.getElementById("yieldTrendChart").getContext("2d");
+    
+    const histYears = globalHistory.years || [];
+    const histValues = globalHistory.yields || [];
+    
+    if (histYears.length === 0) return;
 
-    trendChart = new Chart(ctx, {
-        type: "line",
+    const lastYear = histYears[histYears.length - 1];
+    const lastVal = histValues[histValues.length - 1];
+
+    // Create the "Stitched" Forecast Line
+    const dataForecast = new Array(histYears.length - 1).fill(null);
+    dataForecast.push(lastVal); // Bridge point
+    dataForecast.push(globalPrediction.prediction);
+
+    new Chart(ctx, {
+        type: 'line',
         data: {
-            labels: [],
+            labels: [...histYears, globalPrediction.year],
             datasets: [
                 {
-                    label: "Historical Yield (hg/ha)",
-                    data: [],
-                    tension: 0.4,
-                    borderWidth: 2,
-                    fill: false
+                    label: 'Historical Data',
+                    data: histValues,
+                    borderColor: '#198754',
+                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    fill: true,
+                    tension: 0.3
                 },
                 {
-                    label: "AI Forecast",
-                    data: [],
-                    type: "scatter",
-                    pointRadius: 8
+                    label: 'AI Forecast',
+                    data: dataForecast,
+                    borderColor: '#0d6efd',
+                    borderDash: [5, 5],
+                    pointRadius: 6,
+                    fill: false,
+                    tension: 0
                 }
             ]
         },
-        options: {
-            responsive: true,
+        options: { 
+            responsive: true, 
             maintainAspectRatio: false,
-            scales: {
-                x: { title: { display: true, text: "Year" } },
-                y: { title: { display: true, text: "Yield (hg/ha)" } }
+            plugins: {
+                legend: { position: 'top' }
             }
         }
     });
 }
-
-
-async function updateChart() {
-    const country = document.getElementById("countrySelect").value;
-    const crop = document.getElementById("cropSelect").value;
-    if (!country || !crop) return;
-
-    const res = await fetch(`${API_BASE_URL}/trend/${country}/${crop}`);
-    const data = await res.json();
-
-    // Historical curve
-    trendChart.data.labels = data.years.map(String);
-    trendChart.data.datasets[0].data = data.yields;
-
-    // Clear old forecast
-    trendChart.data.datasets[1].data = [];
-
-    trendChart.update();
-}
-
-
-///////////////////////////
-// DASHBOARD – SIMULATION
-///////////////////////////
-
-async function runSimulation() {
-    const payload = {
-        country: document.getElementById("countrySelect").value,
-        crop: document.getElementById("cropSelect").value,
-        rainfall: parseFloat(document.getElementById("simRain").value),
-        temp: parseFloat(document.getElementById("simTemp").value),
-        pesticides: parseFloat(document.getElementById("simPest").value),
-        year: parseInt(document.getElementById("simYear").value)
-    };
-
-    const res = await fetch(`${API_BASE_URL}/simulate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    });
-
-    const result = await res.json();
-
-    /* ================================
-       CHART UPDATE (CORRECT WAY)
-       ================================ */
-
-    // Ensure forecast dataset exists (Dataset[1])
-    if (!trendChart.data.datasets[1]) {
-        trendChart.data.datasets.push({
-            label: "AI Forecast",
-            type: "scatter",
-            data: [],
-            pointRadius: 8
-        });
-    }
-
-    // Replace previous forecast point
-    trendChart.data.datasets[1].data = [{
-        x: result.year.toString(),
-        y: result.prediction
-    }];
-
-    trendChart.update();
-
-    /* ================================
-       REPORT SECTION
-       ================================ */
-
-    document.getElementById("reportSection").classList.remove("d-none");
-    document.getElementById("reportYearHeader").innerText = result.year;
-    document.getElementById("forecastTableHeader").innerText = `${result.year} AI Forecast`;
-    document.getElementById("tableForecast").innerText = result.prediction.toLocaleString();
-    document.getElementById("tableBaseline").innerText = result.baseline ?? "N/A";
-
-    if (result.baseline) {
-        const diff = ((result.prediction - result.baseline) / result.baseline) * 100;
-        document.getElementById("tableDelta").innerText =
-            `${diff >= 0 ? "+" : ""}${diff.toFixed(2)}%`;
-    }
-
-    document.getElementById("legendYear").innerText = result.year;
-    document.getElementById("predictionLegend").classList.remove("d-none");
-}
-
-///////////////////////////
-// WEATHER
-///////////////////////////
-
-async function fetchWeatherData() {
-    const country = document.getElementById("countrySelect").value;
-    const res = await fetch(`${API_BASE_URL}/get_live_weather/${country}`);
-    const data = await res.json();
-
-    if (!data.error) {
-        document.getElementById("simTemp").value = Math.round(data.temp);
-        document.getElementById("simRain").value = data.rain;
-    }
-}
-
-function toggleManualMode() {
-    const live = document.getElementById("liveToggle").checked;
-    document.getElementById("liveFetchContainer").classList.toggle("d-none", !live);
-    document.getElementById("simRain").readOnly = live;
-    document.getElementById("simTemp").readOnly = live;
-}
-
-///////////////////////////
-// INIT
-///////////////////////////
-
-document.addEventListener("DOMContentLoaded", async () => {
-
-    // Predict page
-    if (document.getElementById("predictForm")) {
-        await populateDropdowns("countrySelect", "cropSelect");
-
-        document.getElementById("predictForm").addEventListener("submit", e => {
-            e.preventDefault();
-            const data = Object.fromEntries(new FormData(e.target));
-            data.year = parseInt(data.year);
-            data.temp = parseFloat(data.temp);
-            data.rainfall = parseFloat(data.rainfall);
-            data.pesticides = parseFloat(data.pesticides);
-            runPrediction(data);
-        });
-    }
-
-    // Dashboard page
-    if (document.getElementById("yieldTrendChart")) {
-        await populateDropdowns("countrySelect", "cropSelect");
-        initChart();
-
-        document.getElementById("countrySelect").addEventListener("change", updateChart);
-        document.getElementById("cropSelect").addEventListener("change", updateChart);
-
-        const saved = localStorage.getItem("chadnova_query");
-        if (saved) {
-            const q = JSON.parse(saved);
-            countrySelect.value = q.country;
-            cropSelect.value = q.crop;
-            simRain.value = q.rainfall;
-            simTemp.value = q.temp;
-            simPest.value = q.pesticides;
-            simYear.value = q.year;
-            updateChart();
-        }
-    }
-});

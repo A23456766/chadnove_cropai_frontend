@@ -4,35 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChadNova AI | Agricultural Intelligence</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root { --chad-green: #198754; --chad-dark: #1e293b; }
-        .navbar { background-color: var(--chad-dark) !important; }
-        .btn-success { background-color: var(--chad-green); border: none; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    </style>
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3">
+
+    <div id="loadingState" class="d-none">
+        <div class="text-center">
+            <div class="spinner-border text-success" style="width: 5rem; height: 5rem; border-width: 0.25em;" role="status"></div>
+            <h2 class="mt-4 fw-bold text-dark">Processing Intelligence...</h2>
+            <p class="text-muted">Communicating with ChadNova AI Engine</p>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3 sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="./index.html"><i class="fa-solid fa-leaf text-success me-2"></i>CHADNOVA AI</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="./index.html">Core Concepts</a>
-                <a class="nav-link btn btn-outline-success text-white px-3 ms-lg-3" href="./predict.html">Launch Predictor</a>
-                <a class="nav-link ms-3" href="./dashboard.html"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="fa-solid fa-leaf text-success me-2"></i>CHADNOVA AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto align-items-center">
+                    <a class="nav-link" href="index.html">Core Concepts</a>
+                    <a class="nav-link ms-lg-3" href="dashboard.html">
+                        <i class="fa-solid fa-chart-line me-1"></i> Dashboard
+                    </a>
+                    <a class="nav-link btn btn-success text-white px-4 ms-lg-4 mt-2 mt-lg-0 shadow-sm" href="predict.html">
+                        Launch Predictor
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
 
-    {% block content %}{% endblock %}
+    <main>
+        </main>
 
-    <footer class="py-4 text-center text-muted small mt-5">
-        &copy; 2025 ChadNova Technologies. All Rights Reserved.
+    <footer class="py-5 text-center text-muted small mt-5 bg-white border-top">
+        <div class="container">
+            <p class="mb-1 fw-bold text-dark">ChadNova Technologies &copy; 2025</p>
+            <p class="mb-0 text-secondary">Advancing food security through precision AI-driven agricultural diagnostics.</p>
+        </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init({ duration: 800 });</script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="main.js" defer></script>
+    
+    <script>
+        // Global User Interface Initialization
+        document.addEventListener("DOMContentLoaded", () => {
+            AOS.init({ 
+                duration: 800, 
+                once: true,
+                easing: 'ease-in-out'
+            });
+        });
+    </script>
 </body>
 </html>

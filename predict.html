@@ -3,114 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChadNova AI | Predict</title>
+    <title>ChadNova AI | Agricultural Predictor</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- AOS -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
-    <style>
-        :root { --chad-green: #198754; --chad-dark: #1e293b; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .navbar { background-color: var(--chad-dark) !important; }
-        .btn-success { background-color: var(--chad-green); border: none; }
-    </style>
-
     <script src="main.js" defer></script>
-</head>
-<body class="bg-light">
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3">
+    <style>
+        .custom-switch .form-check-input { width: 3.5rem; height: 1.75rem; cursor: pointer; }
+        .form-control:read-only { background-color: #f8fafc !important; cursor: not-allowed; opacity: 0.8; }
+        .input-hint { font-size: 0.72rem; font-weight: 700; display: block; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-bubble { cursor: help; color: #64748b; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+    <div id="loadingState" class="d-none">
+        <div class="text-center">
+            <div class="spinner-border text-success" style="width: 4rem; height: 4rem; border-width: 0.25em;" role="status"></div>
+            <h3 class="mt-4 fw-bold text-dark">AI Engine Processing...</h3>
+            <p class="text-muted">Correlating 28,000+ data points for your diagnostic.</p>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="./index.html">
+            <a class="navbar-brand fw-bold" href="index.html">
                 <i class="fa-solid fa-leaf text-success me-2"></i>CHADNOVA AI
             </a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="./index.html">Core Concepts</a>
-                <a class="nav-link btn btn-outline-success text-white px-3 ms-lg-3" href="./predict.html">
-                    Launch Predictor
+            <div class="navbar-nav ms-auto align-items-center">
+                <a class="nav-link text-white-50 px-3" href="dashboard.html">
+                    <i class="fa-solid fa-chart-pie me-1"></i> Dashboard
                 </a>
-                <a class="nav-link ms-3" href="./dashboard.html">
-                    <i class="fa-solid fa-chart-line"></i> Dashboard
-                </a>
+                <a class="nav-link btn btn-outline-light btn-sm px-3 ms-2" href="index.html">Learn Methodology</a>
             </div>
         </div>
     </nav>
 
-    <!-- PREDICTOR FORM -->
-    <div class="container-fluid mt-5 px-5">
-        <div class="row">
-            <div class="col-md-4 no-print" data-aos="fade-right">
-                <div class="card shadow border-0 p-4 h-100">
-                    <h4 class="mb-4 text-success fw-bold">Analysis Parameters</h4>
+    <div class="container mt-5 px-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-11" data-aos="fade-up">
+                
+                <div class="card shadow-lg border-0 p-5">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 border-bottom pb-4">
+                        <div>
+                            <h2 class="fw-bold text-dark mb-1">AI Diagnostic Configuration</h2>
+                            <p class="text-muted mb-0">Select your parameters to simulate yield outcomes.</p>
+                        </div>
+                        
+                        <div class="form-check form-switch custom-switch mt-3 mt-md-0 p-3 bg-light rounded-pill">
+                            <input class="form-check-input ms-0" type="checkbox" id="weatherToggle" checked>
+                            <label class="form-check-label ms-2 fw-bold text-primary" for="weatherToggle">
+                                <i class="fa-solid fa-satellite-dish me-1"></i> Live Climate Sync
+                            </label>
+                        </div>
+                    </div>
+
                     <form id="predictForm">
-                        <label class="small fw-bold">Select Country</label>
-                        <select name="country" id="countrySelect" class="form-select mb-3" required>
-                            <!-- Options will be populated from backend -->
-                        </select>
-
-                        <label class="small fw-bold">Select Crop</label>
-                        <select name="crop" id="cropSelect" class="form-select mb-3" required>
-                            <!-- Options will be populated from backend -->
-                        </select>
-
-                        <label class="small fw-bold">Target Year</label>
-                        <select name="year" class="form-select mb-3" required>
-                            <option value="2024">2024 (Current)</option>
-                            <option value="2025" selected>2025</option>
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                            <option value="2030">2030 (Long-term)</option>
-                        </select>
-
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label class="small fw-bold">Rainfall (mm)</label>
-                                <input type="number" name="rainfall" class="form-control" placeholder="e.g. 1000" required>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="fw-bold small text-muted text-uppercase mb-2">Target Region</label>
+                                <select name="country" id="countrySelect" class="form-select form-select-lg shadow-sm" required>
+                                    <option value="" disabled selected>Syncing Database...</option>
+                                </select>
                             </div>
-                            <div class="col-6">
-                                <label class="small fw-bold">Temperature (°C)</label>
-                                <input type="number" step="0.1" name="temp" class="form-control" placeholder="e.g. 25" required>
+                            <div class="col-md-6">
+                                <label class="fw-bold small text-muted text-uppercase mb-2">Crop Variety</label>
+                                <select name="crop" id="cropSelect" class="form-select form-select-lg shadow-sm" required>
+                                    <option value="" disabled selected>Syncing Database...</option>
+                                </select>
                             </div>
+
+                            <div class="col-12 my-2"><hr class="opacity-10"></div> 
+                            
+                            <div class="col-md-4">
+                                <label class="fw-bold small text-muted text-uppercase mb-2">
+                                    Rainfall (mm/year)
+                                    <i class="fa-solid fa-circle-info info-bubble ms-1" title="The AI uses this to calculate soil moisture capacity."></i>
+                                </label>
+                                <input type="number" name="rainfall" id="rainInput" class="form-control form-control-lg shadow-sm" placeholder="e.g. 1100" required readonly>
+                                <span id="rainHint" class="input-hint text-primary"><i class="fa-solid fa-lock me-1"></i> Locked to Live Data</span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="fw-bold small text-muted text-uppercase mb-2">
+                                    Avg Temperature (°C)
+                                    <i class="fa-solid fa-circle-info info-bubble ms-1" title="Used to predict heat-stress impact on growth cycles."></i>
+                                </label>
+                                <input type="number" step="0.1" name="temp" id="tempInput" class="form-control form-control-lg shadow-sm" placeholder="e.g. 28.5" required readonly>
+                                <span id="tempHint" class="input-hint text-primary"><i class="fa-solid fa-lock me-1"></i> Locked to Live Data</span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="fw-bold small text-muted text-uppercase mb-2">
+                                    Pesticides (Tonnes)
+                                    <i class="fa-solid fa-circle-info info-bubble ms-1" title="Represents total chemical input for the selected area."></i>
+                                </label>
+                                <input type="number" step="0.1" name="pesticides" id="pesticideInput" class="form-control form-control-lg shadow-sm" placeholder="e.g. 150" required>
+                                <span class="input-hint text-secondary"><i class="fa-solid fa-hand me-1"></i> User-defined scenario</span>
+                            </div>
+
+                            <input type="hidden" name="year" value="2025">
                         </div>
 
-                        <label class="small fw-bold">Pesticides (tonnes)</label>
-                        <input type="number" name="pesticides" class="form-control mb-4" placeholder="e.g. 100" required>
-
-                        <button type="submit" class="btn btn-success w-100 py-3 fw-bold shadow-sm">RUN AI DIAGNOSTIC</button>
+                        <div class="mt-5 pt-3">
+                            <button type="submit" class="btn btn-success w-100 py-3 fw-bold shadow-lg text-uppercase ls-1" style="font-size: 1.1rem;">
+                                <i class="fa-solid fa-microchip me-2"></i> Run AI Yield Diagnostic
+                            </button>
+                            <p class="text-center mt-3 small text-muted">Estimated Processing Time: &lt; 2 seconds</p>
+                        </div>
                     </form>
                 </div>
-            </div>
 
-            <div class="col-md-8">
-                <div class="h-100 d-flex flex-column justify-content-center align-items-center opacity-25 border rounded bg-white shadow-sm p-5">
-                    <i class="fa-solid fa-microchip fa-7x mb-4"></i>
-                    <h3 class="fw-bold">Awaiting Data Analysis</h3>
-                    <p>Configure parameters on the left to generate the visual report. After submission, you will be redirected to the dashboard.</p>
+                <div class="mt-5 p-4 bg-white rounded border shadow-sm" data-aos="fade-up">
+                    <h6 class="fw-bold text-dark"><i class="fa-solid fa-circle-question text-primary me-2"></i>How to use Manual Override?</h6>
+                    <p class="small text-muted mb-0">Turn off 'Live Climate Sync' above to input custom scenarios. This allows you to simulate how a drought (low rainfall) or a heatwave (high temp) would impact your specific crop yield.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="py-4 text-center text-muted small mt-5">
-        &copy; 2025 ChadNova Technologies. All Rights Reserved.
-    </footer>
-
-    <!-- AOS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({ duration: 800, once: true });
+        document.addEventListener("DOMContentLoaded", () => {
+            AOS.init({ duration: 800, once: true });
+            
+            // Enable tooltips if you use them
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
+            var tooltipList = tooltipTriggerList.map(function (el) {
+                return new bootstrap.Tooltip(el)
+            })
+        });
     </script>
 </body>
 </html>
-    
