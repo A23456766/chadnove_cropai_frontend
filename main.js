@@ -1,13 +1,13 @@
 /**
- * CHADNOVA AI - Core Logic Engine
- * Optimized for Hybrid Weather Sync & Step-by-Step Dashboard Reveal
+ * CHADNOVA AI - Production Logic Engine
+ * Synced to Render Cloud Backend
  */
 
-// 1. SMART IP DETECTION (Detects localhost or your local IP automatically)
-const currentIP = window.location.hostname; 
-const API_BASE_URL = `http://${currentIP}:5000/api`; 
+// 1. PRODUCTION API CONFIGURATION
+// Pointing directly to your Render Backend
+const API_BASE_URL = "https://chadnove-cropai-backend.onrender.com/api"; 
 
-console.log("🚀 ChadNova Engine Initialized at:", API_BASE_URL);
+console.log("🚀 ChadNova Production Engine Initialized at:", API_BASE_URL);
 
 // Global state for Chart stitching
 let globalHistory = { years: [], yields: [] };
@@ -15,7 +15,7 @@ let globalPrediction = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // --- ELEMENTS ---
+    // --- UI ELEMENTS ---
     const countrySelect = document.getElementById("countrySelect");
     const cropSelect = document.getElementById("cropSelect");
     const weatherToggle = document.getElementById("weatherToggle");
@@ -29,11 +29,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 1. PREDICT PAGE LOGIC
     // ==========================================
     if (countrySelect && cropSelect) {
-        console.log("📍 Predictor UI Detected.");
+        console.log("📍 Predictor UI Detected. Connecting to Render...");
 
         // Fetch Metadata for Dropdowns
         try {
             const res = await fetch(`${API_BASE_URL}/get_metadata`);
+            if (!res.ok) throw new Error("Backend not responding");
+            
             const data = await res.json();
             
             // Clear "Syncing..." and populate
@@ -42,9 +44,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             data.countries.forEach(c => countrySelect.add(new Option(c, c)));
             data.crops.forEach(c => cropSelect.add(new Option(c, c)));
+            console.log("✅ Metadata Synced.");
         } catch (e) { 
-            console.error("❌ Metadata fetch failed. Is Backend running?");
-            countrySelect.innerHTML = '<option value="" disabled>Server Offline</option>';
+            console.error("❌ Connection failed:", e);
+            countrySelect.innerHTML = '<option value="" disabled>Server Waking Up... Please Refresh</option>';
         }
 
         // HYBRID TOGGLE LOGIC (Lock/Unlock Inputs)
@@ -82,6 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (data.temp) {
                     tempInput.value = data.temp;
                     rainInput.value = data.rain;
+                    console.log("🌡️ Weather synced for:", country);
                 }
             } catch (err) { console.error("❌ Weather sync failed"); }
         }
@@ -110,7 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 
                 window.location.href = "dashboard.html";
             } catch (err) {
-                alert("AI Simulation Failed. Check Backend connection.");
+                alert("AI Simulation Failed. The server may still be waking up.");
                 if (loader) loader.classList.add("d-none");
             }
         });
@@ -139,11 +143,11 @@ async function loadDashboard() {
     document.getElementById("compareYear").innerText = result.year;
     
     const valBaseline = document.getElementById("valBaseline");
-    valBaseline.innerText = result.baseline ? result.baseline.toLocaleString() : "N/A";
+    if (valBaseline) valBaseline.innerText = result.baseline ? result.baseline.toLocaleString() : "N/A";
 
-    if (result.baseline) {
+    const deltaEl = document.getElementById("valDelta");
+    if (result.baseline && deltaEl) {
         const diff = ((result.prediction - result.baseline) / result.baseline) * 100;
-        const deltaEl = document.getElementById("valDelta");
         deltaEl.innerText = `${diff > 0 ? "+" : ""}${diff.toFixed(2)}%`;
         deltaEl.className = diff > 0 ? "fw-bold text-success" : "fw-bold text-danger";
     }
@@ -178,9 +182,8 @@ function renderChart() {
     const lastYear = histYears[histYears.length - 1];
     const lastVal = histValues[histValues.length - 1];
 
-    // Create the "Stitched" Forecast Line
     const dataForecast = new Array(histYears.length - 1).fill(null);
-    dataForecast.push(lastVal); // Bridge point
+    dataForecast.push(lastVal);
     dataForecast.push(globalPrediction.prediction);
 
     new Chart(ctx, {
